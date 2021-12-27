@@ -1,6 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
+const connectionDB = require("../database/connection.db");
 require("colors");
 
 class Server {
@@ -27,7 +28,12 @@ class Server {
 
   routes() {}
 
-  dataBaseConnection() {}
+  dataBaseConnection() {
+
+    connectionDB().then(()=>{
+      console.log("Data base is connected".bgGreen.black)
+    }).catch(console.log) 
+  }
 
   startServer() {
     this.app.listen(this.port, () => {
