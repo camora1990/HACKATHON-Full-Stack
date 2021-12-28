@@ -26,13 +26,16 @@ class Server {
     this.app.use(morgan("dev"));
   }
 
-  routes() {}
+  routes() {
+    this.app.use(this.paths.user, require("../routes/user.route"));
+  }
 
   dataBaseConnection() {
-
-    connectionDB().then(()=>{
-      console.log("Data base is connected".bgGreen.black)
-    }).catch(console.log) 
+    connectionDB()
+      .then(() => {
+        console.log("Data base is connected".bgGreen.black);
+      })
+      .catch(console.log);
   }
 
   startServer() {
