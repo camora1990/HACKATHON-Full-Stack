@@ -10,7 +10,7 @@ class Server {
     this.paths = {
       user: "/api/v1.0/user",
       product: "/api/v1.0/product",
-      auth: "/api/v1.0/login",
+      auth: "/api/v1.0",
     };
     this.port = process.env.PORT;
 
@@ -28,6 +28,7 @@ class Server {
 
   routes() {
     this.app.use(this.paths.user, require("../routes/user.route"));
+    this.app.use(this.paths.auth, require('../routes/auth.route'))
   }
 
   dataBaseConnection() {

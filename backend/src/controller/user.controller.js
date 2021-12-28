@@ -1,19 +1,28 @@
 const { request, response } = require("express");
-const { encryptPassword } = require("../helpers");
+const { encryptPassword, generateJWT } = require("../helpers");
 const { userModel } = require("../model");
 
 const createUser = async (req = request, res = response) => {
-  const { name, email, isAdmin, password } = req.body;
+  const { name, isAdmin, password } = req.body;
+  const email = req.body.email.toUpperCase().trim();
   try {
-    const user = new userModel({ name, email, isAdmin, password });
+    const user = new userModel({
+      name,
+      email,
+      isAdmin,
+      password,
+    });
 
     user.password = await encryptPassword(password);
     await user.save();
+
+    token = await generateJWT(email, user._id, isAdmin, name);
 
     res.status(201).json({
       ok: true,
       status: 201,
       user,
+      token,
     });
   } catch (error) {
     res.status(500).json({
@@ -23,6 +32,8 @@ const createUser = async (req = request, res = response) => {
     });
   }
 };
+
+const listUser = async (req = request, resp = response) => {};
 
 module.exports = {
   createUser,

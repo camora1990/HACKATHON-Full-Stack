@@ -6,8 +6,9 @@ const { userModel } = require("../model");
  * @author Camilo Morales Sanchez
  */
 const validateExsitingEmail = async (email) => {
+  email.trim().toUpperCase();
   const user = await userModel.findOne({ email });
-  
+
   if (user) {
     throw new Error(`email: ${email} is already registered!!`);
   }

@@ -15,6 +15,17 @@ const encryptPassword = async (password) => {
   }
 };
 
+const validatePassword = async(hash, password)=>{
+
+  try {
+    return bcrypt.compareSync(password,hash)
+  } catch (error) {
+    return false
+  }
+
+}
+
 module.exports = {
   encryptPassword,
+  validatePassword
 };

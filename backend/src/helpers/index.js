@@ -1,4 +1,5 @@
 module.exports={
-    ...require('./db-validators'),
-    ...require('./encrypt')
+    ...require('./dbValidators.helpers'),
+    ...require('./encrypt.helpers'),
+    ...require('./jwt.helpers')
 }
