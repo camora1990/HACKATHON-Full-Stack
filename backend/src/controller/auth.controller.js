@@ -1,10 +1,19 @@
 const { request, response } = require("express");
-const { generateJWT } = require("../helpers");
+const { generateJWT, validatePassword } = require("../helpers");
 
 const login = async (req = request, res = response) => {
   const { user } = req.body;
 
   try {
+
+    const verifyPassword = await validatePassword(user.password, password);
+    if (!verifyPassword) {
+      return res.status(400).json({
+        ok: false,
+        status: 400,
+        message: "Username or password are incorrect",
+      });
+    }
     const token = await generateJWT(
       user.email,
       user._id,

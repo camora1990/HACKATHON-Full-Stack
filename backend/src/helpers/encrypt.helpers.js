@@ -15,12 +15,20 @@ const encryptPassword = async (password) => {
   }
 };
 
+
+/**
+ * @description Validate password
+ * @param {*} hash 
+ * @param {*} password 
+ * @author Camilo Morales Sanchez
+ * @returns 
+ */
 const validatePassword = async(hash, password)=>{
 
   try {
     return bcrypt.compareSync(password,hash)
   } catch (error) {
-    return false
+    throw new Error(error.message);
   }
 
 }
