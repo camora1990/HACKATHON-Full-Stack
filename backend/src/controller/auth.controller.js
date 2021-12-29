@@ -2,7 +2,7 @@ const { request, response } = require("express");
 const { generateJWT, validatePassword } = require("../helpers");
 
 const login = async (req = request, res = response) => {
-  const { user } = req.body;
+  const { user,password } = req.body;
 
   try {
 

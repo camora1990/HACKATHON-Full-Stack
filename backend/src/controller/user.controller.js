@@ -33,8 +33,26 @@ const createUser = async (req = request, res = response) => {
   }
 };
 
-const listUser = async (req = request, resp = response) => {};
+const listUser = async (req = request, res = response) => {
+  
+  try {
+    const users = await userModel.find();
+    res.status(200).json({
+      ok: true,
+      status: 200,
+      users,
+    });
+    
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      status: 500,
+      message: error.message,
+    });
+  }
+};
 
 module.exports = {
   createUser,
+  listUser,
 };

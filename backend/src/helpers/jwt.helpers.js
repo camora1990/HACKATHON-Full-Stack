@@ -30,6 +30,16 @@ const generateJWT = (email, id, isAdmin, name) => {
   });
 };
 
+const verifyJWT = async(token)=>{
+
+  try {
+    return jwt.verify(token,process.env.PRIVATE_KEY)
+  } catch (error) {
+    throw new Error('Invalid token')
+  }
+}
+
 module.exports={
-    generateJWT
+    generateJWT,
+    verifyJWT
 }
