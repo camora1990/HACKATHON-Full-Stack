@@ -23,6 +23,19 @@ const validateUser = async (req = request, res = response, next) => {
     }
 
     req.body.user = user;
+    
+    if (!req.body.payload) {
+      const payload = {
+        email: user.email,
+        id: user._id,
+        isAdmin: user.isAdmin,
+        name: user.name,
+      }
+      req.body.payload=payload
+    }else{
+      req.body.payload.isAdmin = user.isAdmin
+    }
+   
   } catch (error) {
     return res.status(500).json({
       ok: false,
@@ -33,6 +46,15 @@ const validateUser = async (req = request, res = response, next) => {
   next();
 };
 
+
+/**
+ * @description this function validates if the token is valid
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ * @author Camilo Morales Sanchez
+ * @returns 
+ */
 const validateJWT = async (req = request, res = response, next) => {
   try {
     const token = req.header("Authorization").split(" ")[1];
@@ -49,6 +71,14 @@ const validateJWT = async (req = request, res = response, next) => {
   next();
 };
 
+/**
+ * @description this function validates if the authenticated user is an administrator
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ * @author Camilo Morales Sanchez
+ * @returns 
+ */
 const validateAdmin = (req = request, res = response, next)=>{
 
   const {isAdmin} = req.body.payload

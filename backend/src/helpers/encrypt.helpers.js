@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 
 /**
- * @description Encrypt password with salt 10
+ * @description Encrypt password with salt 15
  * @param {*} password
  * @returns hashSync
  * @author Camilo Morales Sanchez

@@ -1,10 +1,13 @@
 const { Router } = require("express");
-const { createUser, listUser } = require("../controller");
+const { createUser, listUser, deleteUser } = require("../controller");
 const { check, header } = require("express-validator");
 const { validateExsitingEmail } = require("../helpers");
 const { validateFields } = require("../middlewares");
-const { validateJWT, validateUser, validateAdmin } = require("../middlewares/validations");
-
+const {
+  validateJWT,
+  validateUser,
+  validateAdmin,
+} = require("../middlewares/validations");
 
 const route = Router();
 
@@ -42,9 +45,22 @@ route.get(
     validateFields,
     validateJWT,
     validateUser,
-    validateAdmin
+    validateAdmin,
   ],
   listUser
+);
+
+route.delete(
+  "/delete-user/:id",
+  [
+    check("id", "It is not a valid mongo id").isMongoId(),
+    header("authorization", "Unauthorization user").notEmpty(),
+    validateFields,
+    validateJWT,
+    validateUser,
+    validateAdmin,
+  ],
+  deleteUser
 );
 
 module.exports = route;

@@ -7,14 +7,8 @@ const jwt = require("jsonwebtoken");
  * @author Camilo Morales Sanchez
  * @returns
  */
-const generateJWT = (email, id, isAdmin, name) => {
+const generateJWT = (payload) => {
   return new Promise((resolve, reject) => {
-    const payload = {
-      email,
-      id,
-      isAdmin,
-      name,
-    };
     jwt.sign(
       payload,
       process.env.PRIVATE_KEY,
@@ -30,6 +24,12 @@ const generateJWT = (email, id, isAdmin, name) => {
   });
 };
 
+
+/**
+ * @description decrypts the token and returns the payload
+ * @param {*} token 
+ * @returns Payload from token
+ */
 const verifyJWT = async(token)=>{
 
   try {
