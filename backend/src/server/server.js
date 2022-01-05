@@ -13,6 +13,7 @@ class Server {
       user: "/api/v1.0/user",
       product: "/api/v1.0/product",
       auth: "/api/v1.0",
+      public:"public"
     };
     this.port = process.env.PORT;
 
@@ -22,6 +23,7 @@ class Server {
   }
 
   middlewares() {
+    
     this.app.use(cors({ origin: "*" }));
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(express.json());
@@ -39,6 +41,7 @@ class Server {
     this.app.use(this.paths.user, require("../routes/user.route"));
     this.app.use(this.paths.auth, require("../routes/auth.route"));
     this.app.use(this.paths.product, require("../routes/product.route"));
+    this.app.use(this.paths.public, express.static("src/storage/products"))
   }
 
   dataBaseConnection() {

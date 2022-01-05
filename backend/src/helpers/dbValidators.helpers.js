@@ -1,4 +1,4 @@
-const { userModel } = require("../model");
+const { userModel, productModel } = require("../model");
 
 /**
  * @description this function validates if the email exists in the database
@@ -17,6 +17,10 @@ const validateExsitingEmail = async (email) => {
   }
 };
 
+/**
+ * @description this function validates if user exist in databae
+ * @param {*} id
+ */
 const validateExistingUser = async (id) => {
   try {
     const user = await userModel.findById(id);
@@ -28,7 +32,25 @@ const validateExistingUser = async (id) => {
   }
 };
 
+/**
+ * @description this function validates if product exist in databae
+ * @param {*} id
+ */
+const validateExistingProduct = async (id) => {
+  try {
+    const product = await productModel.findById(id);
+    if (!product) {
+      throw new Error("Product not found in data base");
+    }
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+
+
 module.exports = {
   validateExsitingEmail,
   validateExistingUser,
+  validateExistingProduct,
 };

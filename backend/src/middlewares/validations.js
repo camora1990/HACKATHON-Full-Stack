@@ -96,14 +96,19 @@ const validateAdmin = (req = request, res = response, next) => {
   next();
 };
 
+/**
+ * @description Validate if img is includes in req
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ * @returns 
+ */
 const validateFile = (req = request, res = response, next) => {
   if (!req.files || Object.keys(req.files).length === 0 || !req.files.img) {
     return res.status(400).json({
       ok: false,
       status: 400,
-      message: res
-        .status(400)
-        .json({ ok: false, status: 400, message: "No files were uploaded." }),
+      message: "No files were uploaded."
     });
   }
   next();

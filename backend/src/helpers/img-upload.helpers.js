@@ -8,7 +8,7 @@ const validExtensions = ["jpg", "png", "jpeg", "gif","JPG","PNG","JPEG"];
  * @returns 
  */
 const uploadFile = (files) => {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => { 
     const { img } = files;
     const splitName = img.name.split(".");
     const extension = splitName[splitName.length - 1];

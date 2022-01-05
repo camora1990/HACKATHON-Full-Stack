@@ -1,5 +1,5 @@
 const { model, Schema } = require("mongoose");
-
+const mongoseePaginate = require('mongoose-paginate-v2')
 const productSchema = new Schema(
   {
     name: {
@@ -24,6 +24,9 @@ const productSchema = new Schema(
     image: {
       type: String,
     },
+    imageName: {
+      type: String,
+    },
     user: {
       type: Schema.Types.ObjectId,
       ref: "user",
@@ -33,9 +36,11 @@ const productSchema = new Schema(
   { timestamps: true }
 );
 
-productSchema.methods.saveUrlImg =function (filName=null) {
-  const url = process.env.URL_BASE
-  this.image = `${url}/public/${filName}`
-}
+productSchema.plugin(mongoseePaginate)
+productSchema.methods.saveUrlImg = function (filName = null) {
+  const url = process.env.URL_BASE;
+  this.image = `${url}/public/${filName}`;
+  this.imageName = filName;
+};
 
 module.exports = model("product", productSchema);
