@@ -41,7 +41,6 @@ route.post(
 route.get(
   "/",
   [
-    header("authorization", "Unauthorization user").notEmpty(),
     validateFields,
     validateJWT,
     validateUser,

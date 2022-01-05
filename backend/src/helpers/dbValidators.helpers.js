@@ -7,15 +7,28 @@ const { userModel } = require("../model");
  */
 const validateExsitingEmail = async (email) => {
   const emailTemp = email.toUpperCase();
-  const user = await userModel.findOne({ email:emailTemp });
-
-  if (user) {
-    throw new Error(`email: ${email} is already registered!!`);
+  try {
+    const user = await userModel.findOne({ email: emailTemp });
+    if (user) {
+      throw new Error(`email: ${email} is already registered!!`);
+    }
+  } catch (error) {
+    throw new Error(error.message);
   }
 };
 
-
+const validateExistingUser = async (id) => {
+  try {
+    const user = await userModel.findById(id);
+    if (!user || !user.status) {
+      throw new Error("User not found in data base");
+    }
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
 
 module.exports = {
   validateExsitingEmail,
+  validateExistingUser,
 };

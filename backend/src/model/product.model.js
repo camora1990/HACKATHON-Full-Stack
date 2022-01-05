@@ -23,7 +23,6 @@ const productSchema = new Schema(
     },
     image: {
       type: String,
-      required: true,
     },
     user: {
       type: Schema.Types.ObjectId,
@@ -33,5 +32,10 @@ const productSchema = new Schema(
   },
   { timestamps: true }
 );
+
+productSchema.methods.saveUrlImg =function (filName=null) {
+  const url = process.env.URL_BASE
+  this.image = `${url}/public/${filName}`
+}
 
 module.exports = model("product", productSchema);

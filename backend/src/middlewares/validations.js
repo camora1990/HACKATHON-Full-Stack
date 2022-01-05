@@ -23,19 +23,18 @@ const validateUser = async (req = request, res = response, next) => {
     }
 
     req.body.user = user;
-    
+
     if (!req.body.payload) {
       const payload = {
         email: user.email,
         id: user._id,
         isAdmin: user.isAdmin,
         name: user.name,
-      }
-      req.body.payload=payload
-    }else{
-      req.body.payload.isAdmin = user.isAdmin
+      };
+      req.body.payload = payload;
+    } else {
+      req.body.payload.isAdmin = user.isAdmin;
     }
-   
   } catch (error) {
     return res.status(500).json({
       ok: false,
@@ -46,21 +45,27 @@ const validateUser = async (req = request, res = response, next) => {
   next();
 };
 
-
 /**
  * @description this function validates if the token is valid
- * @param {*} req 
- * @param {*} res 
- * @param {*} next 
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
  * @author Camilo Morales Sanchez
- * @returns 
+ * @returns
  */
 const validateJWT = async (req = request, res = response, next) => {
+  if (!req.header("Authorization")) {
+    return res.status(401).json({
+      ok: false,
+      status: 401,
+      message: "Unauthorization",
+    });
+  }
   try {
     const token = req.header("Authorization").split(" ")[1];
     const payload = await verifyJWT(token);
-    req.body.email = payload.email
-    req.body.payload = payload
+    req.body.email = payload.email;
+    req.body.payload = payload;
   } catch (error) {
     return res.status(401).json({
       ok: false,
@@ -73,15 +78,14 @@ const validateJWT = async (req = request, res = response, next) => {
 
 /**
  * @description this function validates if the authenticated user is an administrator
- * @param {*} req 
- * @param {*} res 
- * @param {*} next 
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
  * @author Camilo Morales Sanchez
- * @returns 
+ * @returns
  */
-const validateAdmin = (req = request, res = response, next)=>{
-
-  const {isAdmin} = req.body.payload
+const validateAdmin = (req = request, res = response, next) => {
+  const { isAdmin } = req.body.payload;
   if (!isAdmin) {
     return res.status(401).json({
       ok: false,
@@ -89,13 +93,25 @@ const validateAdmin = (req = request, res = response, next)=>{
       message: "Unauthorization user",
     });
   }
-  next()
-}
+  next();
+};
 
-
+const validateFile = (req = request, res = response, next) => {
+  if (!req.files || Object.keys(req.files).length === 0 || !req.files.img) {
+    return res.status(400).json({
+      ok: false,
+      status: 400,
+      message: res
+        .status(400)
+        .json({ ok: false, status: 400, message: "No files were uploaded." }),
+    });
+  }
+  next();
+};
 
 module.exports = {
   validateUser,
   validateJWT,
-  validateAdmin
+  validateAdmin,
+  validateFile,
 };
