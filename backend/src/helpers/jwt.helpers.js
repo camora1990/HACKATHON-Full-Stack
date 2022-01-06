@@ -28,6 +28,7 @@ const generateJWT = (payload) => {
 /**
  * @description decrypts the token and returns the payload
  * @param {*} token 
+ * @author Camilo Morales Sanchez
  * @returns Payload from token
  */
 const verifyJWT = async(token)=>{

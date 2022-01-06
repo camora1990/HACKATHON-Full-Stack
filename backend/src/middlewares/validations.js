@@ -22,7 +22,7 @@ const validateUser = async (req = request, res = response, next) => {
       });
     }
 
-    req.body.user = user;
+    req.user = user;
 
     if (!req.body.payload) {
       const payload = {

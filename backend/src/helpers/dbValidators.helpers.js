@@ -20,13 +20,18 @@ const validateExsitingEmail = async (email) => {
 /**
  * @description this function validates if user exist in databae
  * @param {*} id
+ * @author Camilo Morales Sanchez
  */
 const validateExistingUser = async (id) => {
   try {
     const user = await userModel.findById(id);
-    if (!user || !user.status) {
+    if (!user) {
+      
+      throw new Error("User not found in data base");
+    }else if (!user.status) {
       throw new Error("User not found in data base");
     }
+    
   } catch (error) {
     throw new Error(error.message);
   }
@@ -35,6 +40,7 @@ const validateExistingUser = async (id) => {
 /**
  * @description this function validates if product exist in databae
  * @param {*} id
+ * @author Camilo Morales Sanchez
  */
 const validateExistingProduct = async (id) => {
   try {

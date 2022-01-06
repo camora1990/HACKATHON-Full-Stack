@@ -5,6 +5,7 @@ const validExtensions = ["jpg", "png", "jpeg", "gif","JPG","PNG","JPEG"];
 /**
  * @description Upload file in local folder
  * @param {*} files 
+ * @author Camilo Morales Sanchez
  * @returns 
  */
 const uploadFile = (files) => {

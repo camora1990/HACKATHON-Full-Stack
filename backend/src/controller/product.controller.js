@@ -5,7 +5,7 @@ const { deleImgLocal } = require("../helpers/delete-img.helpers");
 
 const createProduct = async (req = request, res = response) => {
   const { name, description, price, raiting } = req.body;
-  const user = req.body.userId || req.body.payload.id;
+  const user = req.body.user || req.body.payload.id;
   try {
     const product = new productModel({
       name,
@@ -92,7 +92,7 @@ const deleteProduct = async (req = request, res = response) => {
 const updateProduct = async (req = request, res = response) => {
   const { name, description, price, raiting } = req.body;
   const { id } = req.params;
-  const user = req.body.userId;
+  const user = req.body.user;
   try {
     const product = await productModel.findById(id);
 
@@ -100,16 +100,21 @@ const updateProduct = async (req = request, res = response) => {
     product.description = description || product.description;
     product.price = price || product.price;
     product.raiting = raiting || product.raiting;
+
     product.user = user || product.user;
 
-    await deleImgLocal(product.imageName);
-    const filename = await uploadFile(req.files);
-    product.imageName = filename;
-    await product.save()
+    if (req.files) {
+      const filename = await uploadFile(req.files);
+      await deleImgLocal(product.imageName);
+      product.saveUrlImg(filename)
+    }
+
+    await product.save();
     res.status(200).json({
       ok: true,
       status: 200,
       message: "Product update succefully",
+      product
     });
   } catch (error) {
     res.status(500).json({
@@ -124,5 +129,5 @@ module.exports = {
   createProduct,
   deleteProduct,
   listProducts,
-  updateProduct
+  updateProduct,
 };

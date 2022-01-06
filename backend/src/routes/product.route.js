@@ -12,7 +12,7 @@ const {
   validateUser,
   validateFile,
 } = require("../middlewares");
-const { validateExistingProduct } = require("../helpers");
+const { validateExistingProduct, validateExistingUser } = require("../helpers");
 
 const route = Router();
 
@@ -52,15 +52,19 @@ route.post(
   createProduct
 );
 
-route.put("/update-product/:id", [
-  validateJWT,
-  validateUser,
-  check("id", "inalid mongo id")
-    .isMongoId()
-    .if(check("id"))
-    .custom(validateExistingProduct),
+route.put(
+  "/update-product/:id",
+  [
+    validateJWT,
+    validateUser,
+    check('user').if(check('user').exists()).custom(validateExistingUser),
+    check("id", "inalid mongo id")
+      .isMongoId()
+      .if(check("id"))
+      .custom(validateExistingProduct),
     validateFields,
-  validateFile,
-],updateProduct);
+  ],
+  updateProduct
+);
 
 module.exports = route;
