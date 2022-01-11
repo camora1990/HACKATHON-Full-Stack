@@ -38,29 +38,43 @@ const listProducts = async (req = request, res = response) => {
   const { payload } = req.body;
 
   try {
-    if (payload.isAdmin) {
-      const { docs: products, ...information } = await productModel.paginate(
-        {},
-        {
-          limit,
-          page,
-          populate: { path: "user", select: { name: 1, email: 1, isAdmin: 1 } },
-        }
-      );
+    const { docs: products, ...information } = await productModel.paginate(
+      { user: payload.id },
+      {
+        limit,
+        page,
+        populate: { path: "user", select: { name: 1, email: 1, isAdmin: 1 } },
+      }
+    );
 
-      res.status(200).json({ ok: true, status: 200, products, information });
-    } else {
-      const { docs: products, ...information } = await productModel.paginate(
-        { user: payload.id },
-        {
-          limit,
-          page,
-          populate: { path: "user", select: { name: 1, email: 1, isAdmin: 1 } },
-        }
-      );
+    res.status(200).json({ ok: true, status: 200, products, information });
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      status: 500,
+      message: error.message,
+    });
+  }
+};
 
-      res.status(200).json({ ok: true, status: 200, products, information });
-    }
+const productByUser = async (req = request, res = response) => {
+  const { id } = req.params;
+  const { limit = 10, page = 1 } = req.query;
+  try {
+    const products = await productModel.paginate(
+      { user: id },
+      {
+        limit,
+        page,
+        populate: { path: "user", select: { name: 1, email: 1, isAdmin: 1 } },
+      }
+    );
+
+    res.status(200).json({
+      ok:true,
+      status:200,
+      products
+    })
   } catch (error) {
     res.status(500).json({
       ok: false,
@@ -106,7 +120,7 @@ const updateProduct = async (req = request, res = response) => {
     if (req.files) {
       const filename = await uploadFile(req.files);
       await deleImgLocal(product.imageName);
-      product.saveUrlImg(filename)
+      product.saveUrlImg(filename);
     }
 
     await product.save();
@@ -114,7 +128,7 @@ const updateProduct = async (req = request, res = response) => {
       ok: true,
       status: 200,
       message: "Product update succefully",
-      product
+      product,
     });
   } catch (error) {
     res.status(500).json({
@@ -130,4 +144,5 @@ module.exports = {
   deleteProduct,
   listProducts,
   updateProduct,
+  productByUser,
 };

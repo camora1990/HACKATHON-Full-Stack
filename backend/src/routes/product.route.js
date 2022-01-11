@@ -4,6 +4,7 @@ const {
   listProducts,
   deleteProduct,
   updateProduct,
+  productByUser,
 } = require("../controller/product.controller");
 const { check } = require("express-validator");
 const {
@@ -17,6 +18,19 @@ const { validateExistingProduct, validateExistingUser } = require("../helpers");
 const route = Router();
 
 route.get("/", [validateJWT, validateUser], listProducts);
+route.get(
+  "/:id",
+  [
+    check("id", "Invalid mongo ID")
+      .isMongoId()
+      .if(check("id").isMongoId())
+      .custom(validateExistingUser),
+    validateFields,
+    validateJWT,
+    validateUser,
+  ],
+  productByUser
+);
 
 route.delete(
   "/delete-product/:id",
@@ -57,7 +71,7 @@ route.put(
   [
     validateJWT,
     validateUser,
-    check('user').if(check('user').exists()).custom(validateExistingUser),
+    check("user").if(check("user").exists()).custom(validateExistingUser),
     check("id", "inalid mongo id")
       .isMongoId()
       .if(check("id"))
