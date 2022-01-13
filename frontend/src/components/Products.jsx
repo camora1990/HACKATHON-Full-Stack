@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import { Rate } from "antd";
+import { Pagination, Rate } from "antd";
 import "antd/dist/antd.css";
 import { useUser } from "../context/UserContext";
 import { Nav } from "./Nav";
@@ -20,16 +20,24 @@ export const Products = () => {
   const [products, setProducts] = useState([]);
   const [product, setProduct] = useState(initialProduct);
   const [showMessage, setshowMessage] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalData, settotalData] = useState(0);
+  const [pageSize, setpageSize] = useState(0);
 
   const { user } = useUser();
 
-  const getProducts = async (token) => {
+  const getProducts = async (page = 1) => {
+    const { token } = JSON.parse(localStorage.getItem("user"));
     try {
-      const { data } = await axios.get("/product/", {
+      const { data } = await axios.get(`/product/?page=${page}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (data.products.length > 0) {
         setProducts(data.products);
+        setPage(data.information.page);
+        settotalData(data.information.totalDocs);
+        setpageSize(data.information.limit);
         setshowMessage(false);
       } else {
         setProducts([]);
@@ -48,9 +56,13 @@ export const Products = () => {
     }
   };
 
+  const onChangePage = (page) => {
+    debugger;
+    getProducts(page);
+  };
+
   useEffect(() => {
-    const { token } = JSON.parse(localStorage.getItem("user"));
-    getProducts(token);
+    getProducts();
   }, []);
 
   return (
@@ -108,6 +120,16 @@ export const Products = () => {
             </div>
           ))}
         </div>
+        {!showMessage && (
+          <div className="my-5 d-flex justify-content-center">
+            <Pagination
+              current={page}
+              total={totalData}
+              PageSize={pageSize}
+              onChange={onChangePage}
+            />
+          </div>
+        )}
       </div>
 
       {/* Modal */}
