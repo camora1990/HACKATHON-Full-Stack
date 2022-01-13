@@ -3,6 +3,7 @@ import { useUser } from "../context/UserContext";
 import { useHistory, Link } from "react-router-dom";
 
 export const Register = () => {
+  const [loading, setLoading] = useState(false)
   const inicialUser = {
     name: "",
     email: "",
@@ -11,15 +12,17 @@ export const Register = () => {
   const history = useHistory();
   const { registerUser } = useUser();
   const [user, setUser] = useState(inicialUser);
-  const register = (e) => {
+  const register = async(e) => {
+    setLoading(true)
     e.preventDefault();
-    registerUser(user,history)
+    await registerUser(user,history)
+    setLoading(false)
   };
   return (
     <div className="container h-100 mt-5 ">
       <div className="d-flex row justify-content-center aling-items-center h-100">
         <div className="col-12 col-md-9 col-lg-6 col-xl-4">
-          <div className="card">
+          <div className="card card-custon">
             <div className="card-body p-4">
               <h2 className="text-uppercase text-center mb-5">Register</h2>
               <form onSubmit={register}>
@@ -27,7 +30,8 @@ export const Register = () => {
                   <input
                     type="text"
                     className="form-control border border-primary"
-                    id="floatingName"
+                    id="floatingInput"
+                    placeholder="Name"
                     value={user.name}
                     required={true}
                     onChange={(e) => {
@@ -37,8 +41,9 @@ export const Register = () => {
                       });
                     }}
                   />
-                  <label htmlFor="floatingName">Your name</label>
+                  <label htmlFor="floatingInput">Name</label>
                 </div>
+                
                 <div className="form-floating mb-3">
                   <input
                     type="email"
@@ -87,6 +92,18 @@ export const Register = () => {
                 </button>
               </form>
             </div>
+            {loading && (
+              <div className="card-footer d-flex justify-content-center">
+                <button className="btn btn-primary" type="button" disabled>
+                  <span
+                    className="spinner-grow spinner-grow-sm"
+                    role="status"
+                    aria-hidden="true"
+                  ></span>
+                    wait a moment please.....
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

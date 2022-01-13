@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 
-import "../css/login.css";
 export const Login = () => {
   const inicialState = {
     email: "",
@@ -12,17 +11,26 @@ export const Login = () => {
   const history = useHistory();
   const [userData, setUserData] = useState(inicialState);
   const { userLogin } = useUser();
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const { login } = JSON.parse(localStorage.getItem("user")) || false;
+    if (login) {
+      history.push("/products");
+    }
+  }, []);
 
   const login = (e) => {
-      debugger
+    setLoading(true);
     e.preventDefault();
+    debugger
     userLogin(userData, history);
   };
   return (
     <div className="container h-100 mt-5 ">
       <div className="d-flex row justify-content-center aling-items-center h-100">
         <div className="col-12 col-md-9 col-lg-6 col-xl-4">
-          <div className="card">
+          <div className="card card-custon">
             <div className="card-body p-4">
               <h2 className="text-uppercase text-center mb-5">login</h2>
               <form className="form-floating" onSubmit={login}>
@@ -63,7 +71,8 @@ export const Login = () => {
 
                 <button
                   type="submit"
-                  className="btn btn-primary mb-4 form-control p-0 btn-login" style={{fontSize:23}}
+                  className="btn btn-primary mb-4 form-control p-0 btn-login"
+                  style={{ fontSize: 23 }}
                 >
                   Sign in
                 </button>
@@ -103,6 +112,13 @@ export const Login = () => {
                 </div>
               </form>
             </div>
+            {loading && (
+              <div className="card-footer d-flex justify-content-center">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

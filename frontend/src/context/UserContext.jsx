@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 
@@ -12,6 +13,7 @@ const inicialUserState = {
 };
 export const UserProvider = (props) => {
   const [user, setUser] = useState(inicialUserState);
+
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     const initial = JSON.parse(localStorage.getItem("user"));
@@ -28,8 +30,8 @@ export const UserProvider = (props) => {
 
   const userLogin = async (user, history) => {
     try {
-      debugger
       setLoading(true);
+      
       const { data } = await axios.post("/login", user);
 
       if (data.ok) {
@@ -49,12 +51,15 @@ export const UserProvider = (props) => {
           showConfirmButton: false,
           timer: 2000,
         });
+       
         history.push("/products");
       }
 
       setLoading(false);
+     
     } catch (error) {
       setLoading(false);
+     
       if (!error.response.data.ok) {
         return Swal.fire({
           icon: "error",
@@ -68,7 +73,6 @@ export const UserProvider = (props) => {
   };
 
   const registerUser = async (user, history) => {
-    debugger
     try {
       setLoading(true);
       const { data } = await axios.post("/user/register", user);
@@ -82,6 +86,7 @@ export const UserProvider = (props) => {
         };
         localStorage.setItem("user", JSON.stringify(userLoged));
         setUser(userLoged);
+
         Swal.fire({
           position: "center",
           icon: "success",
@@ -93,17 +98,16 @@ export const UserProvider = (props) => {
         setLoading(false);
       }
     } catch (error) {
-      debugger
       setLoading(false);
       if (!error.response.data.ok) {
-        let errors
-        error.response.data.errors.forEach(element => {
-          errors += element.msg
-        })
+        let errors = "";
+        error.response.data.errors.forEach((element) => {
+          errors += `${element.msg}.</br>`;
+        });
         return Swal.fire({
           icon: "error",
           title: "Oops...",
-          text: errors,
+          html: errors,
           footer: '<a href="">Why do I have this issue?</a>',
         });
       }
@@ -111,9 +115,10 @@ export const UserProvider = (props) => {
     }
   };
 
-  const logout = () => {
+  const logout = (history) => {
     setUser(inicialUserState);
     localStorage.removeItem("user");
+    history.push("/");
   };
 
   const value = {
@@ -128,11 +133,11 @@ export const UserProvider = (props) => {
 };
 
 export function useUser() {
-  const context = useContext(UserContext)
+  const context = useContext(UserContext);
 
   if (!context) {
-      throw new Error("Error in useUser")
+    throw new Error("Error in useUser");
   }
 
-  return context
+  return context;
 }
