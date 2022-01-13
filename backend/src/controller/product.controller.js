@@ -34,8 +34,7 @@ const createProduct = async (req = request, res = response) => {
 };
 
 const listProducts = async (req = request, res = response) => {
-  const { limit = 10, page = 1 } = req.query;
-  const { payload } = req.body;
+  const { limit = 12, page = 1 } = req.query;
 
   try {
     const { docs: products, ...information } = await productModel.paginate(
@@ -59,7 +58,7 @@ const listProducts = async (req = request, res = response) => {
 
 const productByUser = async (req = request, res = response) => {
   const { id } = req.params;
-  const { limit = 10, page = 1 } = req.query;
+  const { limit = 15, page = 1 } = req.query;
   try {
     const products = await productModel.paginate(
       { user: id },

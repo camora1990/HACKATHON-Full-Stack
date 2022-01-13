@@ -51,7 +51,7 @@ const createUser = async (req = request, res = response) => {
  * @author Camilo Morales Sanchez
  */
 const listUser = async (req = request, res = response) => {
-  const { limit = 5, page = 1 } = req.query;
+  const { limit = 10, page = 1 } = req.query;
   try {
     const { docs: users, ...information } = await userModel.paginate(
       { status: true },
