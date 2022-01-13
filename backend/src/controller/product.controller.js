@@ -39,7 +39,7 @@ const listProducts = async (req = request, res = response) => {
 
   try {
     const { docs: products, ...information } = await productModel.paginate(
-      { user: payload.id },
+      { },
       {
         limit,
         page,
