@@ -147,7 +147,7 @@ export const Products = () => {
           </div>
         )}
 
-        {(!showMessage && !loading) && (
+        {(!showMessage && !loading && pageSize>12) && (
           <div className="my-5 d-flex justify-content-center">
             <Pagination
               current={page}

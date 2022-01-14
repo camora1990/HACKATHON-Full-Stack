@@ -9,7 +9,7 @@ export const Nav = () => {
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark font-monospace">
-      <div className="container-fluid">
+      <div className="container-fluid container">
         <button
           className="navbar-toggler"
           type="button"
@@ -94,20 +94,16 @@ export const Nav = () => {
             </ul>
           )}
         </div>
-        <div className="dropdown d-flex text-light">
-          {user.name}
-          <img
+        <div className="dropdown d-flex text-light ">
+          <ul
             role="button"
             id="dropdownMenuLink"
             data-bs-toggle="dropdown"
             aria-expanded="false"
-            src={img}
-            className="dropdown-toggle rounded-circle dropdown-toggle"
-            height={30}
-            style={{ marginLeft: 10 }}
-          ></img>
+            className="dropdown-toggle dropdown-toggle bg-dark m-0 p-0"
+          ><i className="fas fa-user"></i> Welcome {user.name}</ul>
 
-          <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
+          <ul className="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuLink">
             <li>
               <a
                 className="dropdown-item"

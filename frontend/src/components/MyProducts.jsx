@@ -1,4 +1,4 @@
-import { Spin } from "antd";
+import { Rate } from "antd";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useUser } from "../context/UserContext";
@@ -18,7 +18,8 @@ export const MyProducts = () => {
       });
 
       setProducts(data.products);
-      products.length > 0 ? setshowMessage(false) : setshowMessage(true);
+      data.products.length > 0 ? setshowMessage(false) : setshowMessage(true);
+
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -36,6 +37,7 @@ export const MyProducts = () => {
   };
   useEffect(() => {
     setLoading(true);
+
     getMyProducts();
   }, []);
   return (
@@ -55,14 +57,60 @@ export const MyProducts = () => {
             <hr />
             <p className="mb-0">
               click{" "}
-              <a href="#" class="alert-link">
+              <a href="#" className="alert-link">
                 here
               </a>{" "}
               to create product
             </p>
           </div>
         ) : (
-          <div>aaa</div>
+          <div className="tab-content-mt3" id="myTabContent">
+            <div
+              className="tab-pane fade show active"
+              id="compara"
+              role="tabpanel"
+              aria-labelledby="compara-tab"
+            >
+              <div className="table-responsive">
+                <table
+                  className="table table-striped table-dark table-bordered table-hover shadow bg-body rounded align-middle"
+                  style={{ minWidth: 1000 }}
+                >
+                  <thead className="text-center">
+                    <tr>
+                      <th scope="col">IMG</th>
+                      <th scope="col ">NAME</th>
+                      <th scope="col">DESCRIPTION</th>
+                      <th scope="col">PRICE</th>
+                      <th scope="col">RATE</th>
+                      <th scope="col">ACTIONS</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {products.map((prod) => (
+                      <tr className="table-light text-center" key={prod._id}>
+                        <td>
+                          <img src={prod.image} alt="" />
+                        </td>
+                        <td>{prod.name}</td>
+                        <td style={{ maxWidth: 300 }}>{prod.description}</td>
+                        <td>$ {prod.price.toLocaleString()}</td>
+                        <td>
+                          <Rate value={prod.raiting} disabled />
+                        </td>
+                        <td>
+                          <div className="d-flex w-100 justify-content-evenly">
+                            <i class="fas fa-trash-alt"></i>
+                            <i class="fas fa-pen"></i>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </>

@@ -38,3 +38,10 @@ body{
     white-space: normal;
 }
 
+table img{
+    max-width: 100px;
+}
+
+table i{
+    cursor: pointer;
+}
