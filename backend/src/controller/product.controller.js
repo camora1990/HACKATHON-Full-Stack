@@ -60,7 +60,7 @@ const productByUser = async (req = request, res = response) => {
   const { id } = req.params;
   const { limit = 15, page = 1 } = req.query;
   try {
-    const products = await productModel.paginate(
+    const {docs:products,...information} = await productModel.paginate(
       { user: id },
       {
         limit,
@@ -72,7 +72,8 @@ const productByUser = async (req = request, res = response) => {
     res.status(200).json({
       ok:true,
       status:200,
-      products
+      products,
+      information
     })
   } catch (error) {
     res.status(500).json({
