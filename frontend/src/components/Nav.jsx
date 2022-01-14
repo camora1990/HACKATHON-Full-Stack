@@ -8,7 +8,7 @@ export const Nav = () => {
   const history = useHistory();
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav className="navbar navbar-expand-lg navbar-dark bg-dark font-monospace">
       <div className="container-fluid">
         <button
           className="navbar-toggler"

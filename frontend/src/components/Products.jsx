@@ -2,9 +2,10 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { Pagination, Rate } from "antd";
-import "antd/dist/antd.css";
+
 import { useUser } from "../context/UserContext";
 import { Nav } from "./Nav";
+import { LoadingSpinner } from "./LoadingSpinner";
 
 export const Products = () => {
   const initialProduct = {
@@ -20,7 +21,7 @@ export const Products = () => {
   const [products, setProducts] = useState([]);
   const [product, setProduct] = useState(initialProduct);
   const [showMessage, setshowMessage] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalData, settotalData] = useState(0);
   const [pageSize, setpageSize] = useState(0);
@@ -43,7 +44,9 @@ export const Products = () => {
         setProducts([]);
         setshowMessage(true);
       }
+      setLoading(false);
     } catch (error) {
+      setLoading(false);
       if (!error.response.data.ok) {
         return Swal.fire({
           icon: "error",
@@ -57,11 +60,11 @@ export const Products = () => {
   };
 
   const onChangePage = (page) => {
-    debugger;
     getProducts(page);
   };
 
   useEffect(() => {
+    setLoading(true);
     getProducts();
   }, []);
 
@@ -69,58 +72,82 @@ export const Products = () => {
     <>
       {<Nav />}
 
-      <div className="container mt-3">
-        <div className="row card-deck">
-          {products.map((prod) => (
-            <div
-              className="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-2"
-              key={prod._id}
-            >
-              <div className="card h-100">
-                <img
-                  src={prod.image}
-                  className="card-img-top img-thumbnail"
-                  style={{ height: 200 }}
-                  alt="..."
-                />
-                <div className="card-body">
-                  <h4 className="card-title text-center">{prod.name}</h4>
-                  <p className="card-text truncate-text">{prod.description}</p>
-                  <h5 className="card-text">$ {prod.price.toLocaleString()}</h5>
-                  <span className="ant-rate-text">
-                    <Rate disabled allowHalf value={prod.raiting} />
-                  </span>
-                  <p className="card-text">
-                    <small className="text-muted">{prod.user.name}</small>
-                  </p>
-                  <div className="card-footer d-flex justify-content-center">
-                    <button
-                      type="button"
-                      className="btn btn-primary"
-                      data-bs-toggle="modal"
-                      data-bs-target="#exampleModal"
-                      onClick={(e) => {
-                        setProduct({
-                          _id: prod._id,
-                          name: prod.name,
-                          description: prod.description,
-                          price: prod.price,
-                          raiting: prod.raiting,
-                          user: prod.user.name,
-                          userEmail: prod.user.email,
-                          image: prod.image,
-                        });
-                      }}
-                    >
-                      Veiw details
-                    </button>
+      <div className="container mt-2 font-monospace">
+      <h2 className="text-center mb-5 mt-3 fw-bold">Products</h2>
+        {loading ? (
+          <LoadingSpinner />
+        ) : showMessage ? (
+          <div className="alert alert-warning" role="alert">
+            <h4 className="alert-heading">Oops...! {user.name}</h4>
+            <p className="fs-6">
+              There are no products available yet, we invite you to create
+              products on the platform so that other users can enjoy them
+            </p>
+            <hr />
+            <p className="mb-0"></p>
+          </div>
+        ) : (
+          
+          <div className="row card-deck font-monospace">
+            {products.map((prod) => (
+              <div
+                className="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4"
+                key={prod._id}
+              >
+                <div className="card h-100 card-custon ">
+                  <div className="d-flex justify-content-center aling-items-center">
+                    <img
+                      src={prod.image}
+                      className="card-img-top mt-1"
+                      style={{ height: 150 }}
+                      alt="..."
+                    />
+                  </div>
+                  <hr />
+                  <div className="card-body">
+                    <h5 className="card-title text-center ">{prod.name}</h5>
+                    <p className="card-text truncate-text " >
+                      {prod.description}
+                    </p>
+                    <h6 className="card-text">
+                      $ {prod.price.toLocaleString()}
+                    </h6>
+                    <p className="ant-rate-text card-text">
+                      <Rate disabled allowHalf value={prod.raiting} />
+                    </p>
+                    <p className="card-text">
+                      <small className="text-muted">{prod.user.name}</small>
+                    </p>
+                    <div className="card-footer d-flex justify-content-center">
+                      <button
+                        type="button"
+                        className="btn btn-primary"
+                        data-bs-toggle="modal"
+                        data-bs-target="#productModal"
+                        onClick={(e) => {
+                          setProduct({
+                            _id: prod._id,
+                            name: prod.name,
+                            description: prod.description,
+                            price: prod.price,
+                            raiting: prod.raiting,
+                            user: prod.user.name,
+                            userEmail: prod.user.email,
+                            image: prod.image,
+                          });
+                        }}
+                      >
+                        Veiw details
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-        {!showMessage && (
+            ))}
+          </div>
+        )}
+
+        {(!showMessage && !loading) && (
           <div className="my-5 d-flex justify-content-center">
             <Pagination
               current={page}
@@ -134,16 +161,16 @@ export const Products = () => {
 
       {/* Modal */}
       <div
-        className="modal"
-        id="exampleModal"
+        className="modal font-monospace "
+        id="productModal"
         tabIndex="-1"
-        aria-labelledby="exampleModalLabel"
+        aria-labelledby="productModalLabel"
         aria-hidden="true"
       >
-        <div className="modal-dialog">
+        <div className="modal-dialog ">
           <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title" id="exampleModalLabel">
+            <div className="modal-header p-2">
+              <h5 className="modal-title" id="productModalLabel">
                 {product.name}
               </h5>
               <button
@@ -155,16 +182,18 @@ export const Products = () => {
             </div>
             <div className="modal-body">
               {" "}
-              <div className="card h-100">
-                <img
-                  src={product.image}
-                  className="card-img-top img-thumbnail"
-                  style={{ height: 200 }}
-                  alt="..."
-                />
+              <div className="card h-100 border-0">
+                <div className="d-flex justify-content-center mt-1">
+                  <img
+                    src={product.image}
+                    className="card-img-top "
+                    style={{ height: 150 }}
+                    alt="..."
+                  />
+                </div>
                 <div className="card-body">
                   <h5 className="fw-bold">Description</h5>
-                  <p className="card-text ">{product.description}</p>
+                  <p className="card-text fs-6">{product.description}</p>
                   <h5 className="card-text">
                     $ {product.price.toLocaleString()}
                   </h5>
@@ -176,15 +205,6 @@ export const Products = () => {
                   </p>
                 </div>
               </div>
-            </div>
-            <div className="modal-footer">
-              <button
-                type="button"
-                className="btn btn-secondary"
-                data-bs-dismiss="modal"
-              >
-                Close
-              </button>
             </div>
           </div>
         </div>

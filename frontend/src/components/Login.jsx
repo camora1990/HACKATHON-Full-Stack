@@ -13,17 +13,11 @@ export const Login = () => {
   const { userLogin } = useUser();
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const { login } = JSON.parse(localStorage.getItem("user")) || false;
-    if (login) {
-      history.push("/products");
-    }
-  }, []);
+  
 
-  const login = (e) => {
+  const login = async (e) => {
     setLoading(true);
     e.preventDefault();
-    debugger
     userLogin(userData, history);
   };
   return (

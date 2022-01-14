@@ -6,6 +6,7 @@ import { MyProducts } from "./components/MyProducts";
 import { Products } from "./components/Products";
 import { Register } from "./components/Register";
 import { useUser } from "./context/UserContext";
+import "antd/dist/antd.css";
 
 function App() {
   const { user } = useUser();
@@ -29,7 +30,7 @@ function App() {
   };
 
   return (
-    <Router>
+    <Router >
       <Public path="/" exact component={Login} />
       <Public path="/register" exact component={Register} />
       <Private path="/products" exact component={Products} />

@@ -29,6 +29,7 @@ export const UserProvider = (props) => {
   }, []);
 
   const userLogin = async (user, history) => {
+    debugger
     try {
       setLoading(true);
       
@@ -52,7 +53,7 @@ export const UserProvider = (props) => {
           timer: 2000,
         });
        
-        history.push("/products");
+        // history.push("/products");
       }
 
       setLoading(false);
