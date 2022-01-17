@@ -1,6 +1,7 @@
 import { Rate } from "antd";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 import { useUser } from "../context/UserContext";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { Nav } from "./Nav";
@@ -34,6 +35,45 @@ export const MyProducts = () => {
       }
       console.log("error in MyProducts", error.message);
     }
+  };
+
+  const deleteProd = async (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await axios.delete(`/product/delete-product/${id}`, {
+            headers: { Authorization: `Bearer ${user.token}` },
+          });
+          getMyProducts();
+
+          Swal.fire({
+            position: "center",
+            icon: "success",
+            title: "Deleted!, Your product has been deleted.",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        } catch (error) {
+          if (!error.response.data.ok) {
+            return Swal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: error.response.data.message,
+              footer: '<a href="">Why do I have this issue?</a>',
+            });
+          }
+          console.log("error in deleteProd", error.message);
+        }
+      }
+    });
   };
   useEffect(() => {
     setLoading(true);
@@ -100,8 +140,13 @@ export const MyProducts = () => {
                         </td>
                         <td>
                           <div className="d-flex w-100 justify-content-evenly">
-                            <i class="fas fa-trash-alt"></i>
-                            <i class="fas fa-pen"></i>
+                            <i
+                              className="fas fa-trash-alt fw-bold"
+                              onClick={(e) => {
+                                deleteProd(prod._id);
+                              }}
+                            ></i>
+                            <i className="fas fa-pen fw-bold"></i>
                           </div>
                         </td>
                       </tr>
