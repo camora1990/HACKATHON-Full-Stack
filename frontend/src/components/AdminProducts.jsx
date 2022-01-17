@@ -1,8 +1,15 @@
-import React from 'react'
-import {Nav} from './Nav'
+import React, { useEffect } from "react";
+import { useUser } from "../context/UserContext";
+import { useHistory } from "react-router-dom";
+import { Nav } from "./Nav";
 
 export const AdminProducts = () => {
-    return (
-        <Nav />
-    )
-}
+  const { user } = useUser();
+  const history = useHistory();
+  useEffect(() => {
+    if (!user.isAdmin) {
+      history.push("/products");
+    }
+  }, []);
+  return <Nav />;
+};
