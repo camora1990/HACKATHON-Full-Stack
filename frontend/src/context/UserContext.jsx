@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 
@@ -29,7 +28,6 @@ export const UserProvider = (props) => {
   }, []);
 
   const userLogin = async (user, history) => {
-    debugger
     try {
       setLoading(true);
       
@@ -95,7 +93,7 @@ export const UserProvider = (props) => {
           showConfirmButton: false,
           timer: 2000,
         });
-        history.push("/products");
+        // history.push("/products");
         setLoading(false);
       }
     } catch (error) {
@@ -119,7 +117,7 @@ export const UserProvider = (props) => {
   const logout = (history) => {
     setUser(inicialUserState);
     localStorage.removeItem("user");
-    history.push("/");
+    // history.push("/");
   };
 
   const value = {

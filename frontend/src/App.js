@@ -11,26 +11,15 @@ import "antd/dist/antd.css";
 function App() {
   const { user } = useUser();
   const Public = (props) => {
-    return user.Login ? <Redirect to="/products" /> : <Route {...props} />;
+    return user.login ? <Redirect to="/products" /> : <Route {...props} />;
   };
   const Private = (props) => {
-    if (user.login) {
-      if (props.path == "/admin-products" || props.path == "/admin-users") {
-        return user.isAdmin ? (
-          <Route {...props} />
-        ) : (
-          <Redirect to="/products" />
-        );
-      } else {
-        return <Route {...props} />;
-      }
-    } else {
-      return <Redirect to="/" />;
-    }
+    return user.login ? <Route {...props} />:<Redirect to="/" />
+
   };
 
   return (
-    <Router >
+    <Router>
       <Public path="/" exact component={Login} />
       <Public path="/register" exact component={Register} />
       <Private path="/products" exact component={Products} />
