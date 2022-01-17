@@ -4,7 +4,7 @@ body{
     background-color: #F6F6F6
 }
 
-.btn-login,.card-footer button{
+.btn-login,.btn-save,.card-footer button{
     border: none;
     background-image: linear-gradient(180deg, #a3a7ff 0, #7a8ffc 25%, #3c78f2 50%, #0063e8 75%, #0051de 100%);
 }
@@ -59,4 +59,19 @@ table i{
     background:rgba(0,0,0,0.3);
     z-index: 5000;
     
+}
+
+.floatingDescription textarea{
+    resize: none;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+
+input[type=number] {
+    -moz-appearance:textfield; /* Firefox */
 }

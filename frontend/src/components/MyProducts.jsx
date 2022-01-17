@@ -7,10 +7,23 @@ import { LoadingSpinner } from "./LoadingSpinner";
 import { Nav } from "./Nav";
 
 export const MyProducts = () => {
+  const initialProduct = {
+    name: "",
+    description: "",
+    price: "",
+    raiting: 0,
+    image: "",
+    img: "",
+  };
   const { user } = useUser();
   const [products, setProducts] = useState([]);
   const [showMessage, setshowMessage] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [product, setProduct] = useState(initialProduct);
+  const [isEdit, setisEdit] = useState(false);
+  const [loadingProduct, setLoadingProduct] = useState(false);
+  const [idProduct, setidProduct] = useState("");
+
   const getMyProducts = async () => {
     const { token, id } = user;
     try {
@@ -75,6 +88,98 @@ export const MyProducts = () => {
       }
     });
   };
+
+  const validateFormatImg = (e) => {
+    const { files } = e.target;
+    if (files && files[0]) {
+      if (!/\.(jpeg|jpg|png|svg|JPG|PNG|SVG)$/i.test(files[0].name)) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "El archivo no tiene un formato valido",
+        });
+        e.target.value = "";
+      } else {
+        setProduct({
+          ...product,
+          image: URL.createObjectURL(files[0]),
+          img: files[0],
+        });
+      }
+    }
+  };
+  const actions = async (e) => {
+    e.preventDefault();
+    setLoadingProduct(true);
+    const formData = new FormData();
+    product.imd !== "" && formData.append("img", product.img);
+    formData.append("name", product.name);
+    formData.append("description", product.description);
+    formData.append("price", product.price);
+    formData.append("raiting", product.raiting);
+    isEdit ? updateProduct(formData) : createProduct(formData);
+  };
+
+  const createProduct = async (formData) => {
+    try {
+      await axios.post("/product/create-product", formData, {
+        headers: { Authorization: `Bearer ${user.token}` },
+      });
+      getMyProducts();
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "Your product has been saved.",
+        showConfirmButton: false,
+        timer: 2000,
+      });
+      setProduct(initialProduct);
+      document.getElementById("closeMOdalProduct").click();
+      setLoadingProduct(false);
+    } catch (error) {
+      setLoadingProduct(false);
+      if (!error.response.data.ok) {
+        return Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: error.response.data.message,
+          footer: '<a href="">Why do I have this issue?</a>',
+        });
+      }
+      console.log("error in createProduct", error.message);
+    }
+  };
+  const updateProduct = async (formData) => {
+    try {
+      debugger;
+      await axios.put(`/product/update-product/${idProduct}`, formData, {
+        headers: { Authorization: `Bearer ${user.token}` },
+      });
+      await getMyProducts();
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "Your product has been edit.",
+        showConfirmButton: false,
+        timer: 2000,
+      });
+      setProduct(initialProduct);
+      document.getElementById("closeMOdalProduct").click();
+      setLoadingProduct(false);
+    } catch (error) {
+      setLoadingProduct(false);
+      if (!error.response.data.ok) {
+        return Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: error.response.data.message,
+          footer: '<a href="">Why do I have this issue?</a>',
+        });
+      }
+      console.log("error in createProduct", error.message);
+    }
+  };
+
   useEffect(() => {
     setLoading(true);
 
@@ -97,7 +202,15 @@ export const MyProducts = () => {
             <hr />
             <p className="mb-0">
               click{" "}
-              <a href="#" className="alert-link">
+              <a
+                href="#"
+                className="alert-link"
+                data-bs-toggle="modal"
+                data-bs-target="#newProductModal"
+                onClick={() => {
+                  setisEdit(false);
+                }}
+              >
                 here
               </a>{" "}
               to create product
@@ -105,6 +218,17 @@ export const MyProducts = () => {
           </div>
         ) : (
           <div className="tab-content-mt3" id="myTabContent">
+            <button
+              className="btn bg-dark text-light mb-3 "
+              data-bs-toggle="modal"
+              data-bs-target="#newProductModal"
+              onClick={() => {
+                setisEdit(false);
+              }}
+            >
+              {" "}
+              Create new product
+            </button>
             <div
               className="tab-pane fade show active"
               id="compara"
@@ -146,7 +270,23 @@ export const MyProducts = () => {
                                 deleteProd(prod._id);
                               }}
                             ></i>
-                            <i className="fas fa-pen fw-bold"></i>
+                            <i
+                              data-bs-toggle="modal"
+                              data-bs-target="#newProductModal"
+                              className="fas fa-pen fw-bold"
+                              onClick={(e) => {
+                                setisEdit(true);
+                                setidProduct(prod._id);
+                                setProduct({
+                                  name: prod.name,
+                                  description: prod.description,
+                                  price: prod.price,
+                                  raiting: prod.raiting,
+                                  image: prod.image,
+                                  img: "",
+                                });
+                              }}
+                            ></i>
                           </div>
                         </td>
                       </tr>
@@ -157,6 +297,141 @@ export const MyProducts = () => {
             </div>
           </div>
         )}
+      </div>
+      {/* Modal */}
+      <div
+        className="modal font-monospace "
+        id="newProductModal"
+        tabIndex="-1"
+        aria-labelledby="newProductModalLabel"
+        aria-hidden="true"
+      >
+        <div className="modal-dialog position-relative">
+          {loadingProduct && (
+            <div className="loading-custom position-absolute  translate-middle top-50 start-0 translate-middle-y w-100">
+              <LoadingSpinner />
+            </div>
+          )}
+          <div className="modal-content">
+            <div className="modal-header p-2">
+              <h5 className="modal-title" id="newProductModalLabel">
+                {isEdit ? "Edit product" : "Create new product"}
+              </h5>
+              <button
+                id="closeMOdalProduct"
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+                onClick={() => {
+                  setProduct(initialProduct);
+                  document.getElementById("formFileProduct").value = "";
+                }}
+              ></button>
+            </div>
+            <div className="modal-body">
+              {" "}
+              <div className="card h-100 border-0">
+                <div className="d-flex justify-content-center mt-1">
+                  {product.image && (
+                    <img
+                      src={product.image}
+                      className="card-img-top "
+                      style={{ height: 150 }}
+                      alt="..."
+                    />
+                  )}
+                </div>
+                <div className="card-body">
+                  <form onSubmit={actions}>
+                    <div className="form-floating mb-3">
+                      <input
+                        type="text"
+                        className="form-control border"
+                        placeholder="Name product"
+                        id="floatingInput"
+                        value={product.name}
+                        required={!isEdit}
+                        onChange={(e) => {
+                          setProduct({
+                            ...product,
+                            name: e.target.value,
+                          });
+                        }}
+                      />
+                      <label htmlFor="floatingInput">Name product</label>
+                    </div>
+
+                    <div className="form-floating mb-3">
+                      <input
+                        type="number"
+                        id="floatingPrice"
+                        className="form-control"
+                        placeholder="price"
+                        value={product.price}
+                        required={!isEdit}
+                        onChange={(e) => {
+                          setProduct({
+                            ...product,
+                            price: e.target.value,
+                          });
+                        }}
+                      />
+                      <label htmlFor="floatingPrice">Price</label>
+                    </div>
+                    <div>
+                      <label htmlFor="rate">Rate</label> <br />
+                      <Rate
+                        id="rate"
+                        allowHalf
+                        className="mb-3"
+                        value={product.raiting}
+                        onChange={(value) => {
+                          setProduct({ ...product, raiting: value });
+                        }}
+                      />
+                    </div>
+                    <div className="form-floating mb-3">
+                      <textarea
+                        name="description"
+                        id="floatingDescription"
+                        cols="30"
+                        rows="20"
+                        className="form-control"
+                        placeholder="Description"
+                        style={{ height: 120, resize: "none" }}
+                        value={product.description}
+                        required={!isEdit}
+                        onChange={(e) => {
+                          setProduct({
+                            ...product,
+                            description: e.target.value,
+                          });
+                        }}
+                      ></textarea>
+                      <label htmlFor="floatingDescription">Description</label>
+                    </div>
+                    <div className="mb-3">
+                      <label htmlFor="formFileProduct" className="form-label">
+                        Add image product
+                      </label>
+                      <input
+                        className="form-control"
+                        type="file"
+                        id="formFileProduct"
+                        onChange={validateFormatImg}
+                        required={!isEdit}
+                      />
+                    </div>
+                    <button className="btn btn-primary form-control btn-save">
+                      {!isEdit ? "Save product" : "Edit product"}
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );
