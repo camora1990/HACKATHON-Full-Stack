@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
 import { useUser } from "../context/UserContext";
+import { LoadingSpinner } from "./LoadingSpinner";
 
 export const Login = () => {
   const inicialState = {
@@ -10,21 +11,25 @@ export const Login = () => {
   };
   const history = useHistory();
   const [userData, setUserData] = useState(inicialState);
-  const { userLogin } = useUser();
-  const [loading, setLoading] = useState(false);
+  const { userLogin ,loading} = useUser();
 
-  
 
   const login = async (e) => {
-    setLoading(true);
+
     e.preventDefault();
-    userLogin(userData, history);
+    await userLogin(userData, history);
   };
   return (
     <div className="container h-100 mt-5 ">
       <div className="d-flex row justify-content-center aling-items-center h-100">
-        <div className="col-12 col-md-9 col-lg-6 col-xl-4">
+        <div className="col-12 col-md-9 col-lg-6 col-xl-4 position-relative">
           <div className="card card-custon">
+            {loading && (
+              <div className="loading-custom position-absolute  translate-middle top-50 start-0 translate-middle-y w-100">
+                <LoadingSpinner />
+              </div>
+            )}
+
             <div className="card-body p-4">
               <h2 className="text-uppercase text-center mb-5">login</h2>
               <form className="form-floating" onSubmit={login}>
@@ -106,13 +111,13 @@ export const Login = () => {
                 </div>
               </form>
             </div>
-            {loading && (
+            {/* {loading && (
               <div className="card-footer d-flex justify-content-center">
                 <div class="spinner-border text-primary" role="status">
                   <span class="visually-hidden">Loading...</span>
                 </div>
               </div>
-            )}
+            )} */}
           </div>
         </div>
       </div>
