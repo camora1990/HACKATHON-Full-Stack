@@ -2,12 +2,14 @@ import { Pagination } from "antd";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
+import Swal from "sweetalert2";
 import { useUser } from "../context/UserContext";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { Nav } from "./Nav";
 
 export const AdminUser = () => {
   const initialUserEdit = {
+    id: "",
     name: "",
     isAdmin: false,
     userEmail: "",
@@ -22,6 +24,8 @@ export const AdminUser = () => {
   const [totalData, settotalData] = useState(0);
   const [pageSize, setpageSize] = useState(0);
   const [userEdit, setuserEdit] = useState(initialUserEdit);
+  const [initialEmail,setinitialEmail] = useState("")
+  const [loadingEditUser ,setloadingEditUser] = useState(false)
 
   const getUsers = async (page) => {
     try {
@@ -49,6 +53,99 @@ export const AdminUser = () => {
       }
       console.log("error in getUsers", error.message);
     }
+  };
+
+  const deleteUser = async (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          setLoading(true);
+          await axios.delete(`/user/delete-user/${id}`, {
+            headers: { Authorization: `Bearer ${user.token}` },
+          });
+          getUsers();
+
+          Swal.fire({
+            position: "center",
+            icon: "success",
+            title: "Deleted!, User has been deleted.",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        } catch (error) {
+          setLoading(false);
+
+          if (!error.response.data.ok) {
+            return Swal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: error.response.data.message,
+              footer: '<a href="">Why do I have this issue?</a>',
+            });
+          }
+          console.log("error in deleteUser", error.message);
+        }
+      }
+    });
+  };
+
+  const updateUser = async (id, editUser) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, edit it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          debugger
+          setloadingEditUser(true);
+          editUser.userEmail == initialEmail && delete editUser.userEmail
+          await axios.put(`/user/update-user/${id}`, editUser, {
+            headers: { Authorization: `Bearer ${user.token}` },
+          });
+          setloadingEditUser(false);
+          document.getElementById('closeModalEditUser').click()
+          getUsers();
+          Swal.fire({
+            position: "center",
+            icon: "success",
+            title: "Deleted!, User has been deleted.",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        } catch (error) {
+          setloadingEditUser(false);
+
+          if (!error.response.data.ok) {
+            return Swal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: error.response.data.message,
+              footer: '<a href="">Why do I have this issue?</a>',
+            });
+          }
+          console.log("error in deleteUser", error.message);
+        }
+      }
+    });
+  };
+
+  const actions = (e) => {
+    e.preventDefault()
+
+    updateUser(userEdit.id, userEdit);
   };
 
   useEffect(() => {
@@ -99,23 +196,41 @@ export const AdminUser = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {users.map((elemt, index) => (
-                    <tr className="table-light text-center" key={elemt._id}>
+                  {users.map((element, index) => (
+                    <tr className="table-light text-center" key={element._id}>
                       <td>{index + 1}</td>
-                      <td>{elemt.name}</td>
-                      <td>{elemt.email}</td>
-                      <td>{elemt.isAdmin ? "Sí" : "No"}</td>
-                      <td>{elemt.status ? "Activo" : "Inactivo"}</td>
+                      <td>{element.name}</td>
+                      <td>{element.email}</td>
+                      <td>{element.isAdmin ? "Yes" : "No"}</td>
+                      <td>{element.status ? "Active" : "Inactive"}</td>
                       <td>
                         <div className="d-flex w-100 justify-content-evenly">
-                          <button className="custom-btn">
-                            <i className="fas fa-trash-alt fw-bold"></i>
-                          </button>
+                          {element._id !== user.id && (
+                            <button
+                              className="custom-btn"
+                              onClick={() => {
+                                deleteUser(element._id);
+                              }}
+                            >
+                              <i className="fas fa-trash-alt fw-bold"></i>
+                            </button>
+                          )}
+
                           <button className="custom-btn">
                             <i
                               data-bs-toggle="modal"
-                              data-bs-target="#newProductModal"
+                              data-bs-target="#editUserModal"
                               className="fas fa-pen fw-bold"
+                              onClick={() => {
+                                setuserEdit({
+                                  id: element._id,
+                                  name: element.name,
+                                  isAdmin: element.isAdmin,
+                                  userEmail: element.email,
+                                  status: element.status,
+                                });
+                                setinitialEmail(element.email)
+                              }}
                             ></i>
                           </button>
                         </div>
@@ -137,6 +252,123 @@ export const AdminUser = () => {
             />
           </div>
         )}
+      </div>
+
+      <div
+        className="modal font-monospace"
+        id="editUserModal"
+        tabIndex="-1"
+        aria-labelledby="editUserModalLabel"
+        aria-hidden="true"
+      >
+        <div className="modal-dialog position-relative">
+        {loadingEditUser && (
+            <div className="loading-custom position-absolute  translate-middle top-50 start-0 translate-middle-y w-100">
+              <LoadingSpinner />
+            </div>
+          )}
+          <div className="modal-content">
+            <div className="modal-header p-2">
+              <h5 className="modal-title" id="editUserModalLabel">
+                Edit user
+              </h5>
+              <button
+                className="btn-close"
+                id="closeModalEditUser"
+                type="button"
+                data-bs-dismiss="modal"
+                aria-label="close"
+              ></button>
+            </div>
+            <div className="modal-body">
+              <div className="card-h-100 border-0">
+                <div className="card-body">
+                  <form onSubmit={actions}>
+                    <div className="form-floating mb-3">
+                      <input
+                        type="text"
+                        className="form-control border"
+                        placeholder="Name"
+                        value={userEdit.name}
+                        id="floatingName"
+                        onChange={(e) => {
+                          setuserEdit({
+                            ...userEdit,
+                            name: e.target.value,
+                          });
+                        }}
+                      />
+                      <label htmlFor="floatingName">Name</label>
+                    </div>
+                    <div className="form-floating mb-3">
+                      <input
+                        type="email"
+                        className="form-control border"
+                        placeholder="Email"
+                        value={userEdit.userEmail}
+                        id="floatingEmail"
+                        onChange={(e) => {
+                          setuserEdit({
+                            ...userEdit,
+                            userEmail: e.target.value,
+                          });
+                        }}
+                      />
+                      <label htmlFor="floatingEmail">Email</label>
+                    </div>
+                    {userEdit.id !== user.id && (
+                      <>
+                        <div className="form-check form-switch mb-3">
+                          <input
+                            className="form-check-input"
+                            type="checkbox"
+                            id="flexSwitchCheckDefault"
+                            checked={userEdit.isAdmin}
+                            onChange={(e) => {
+                              setuserEdit({
+                                ...userEdit,
+                                isAdmin: e.target.checked,
+                              });
+                            }}
+                          />
+                          <label
+                            className="form-check-label"
+                            htmlFor="flexSwitchCheckDefault"
+                          >
+                            Is admin
+                          </label>
+                        </div>
+                        <div className="form-check form-switch mb-3">
+                          <input
+                            className="form-check-input"
+                            type="checkbox"
+                            id="flexSwitchCheckDefault"
+                            checked={userEdit.status}
+                            onChange={(e) => {
+                              setuserEdit({
+                                ...userEdit,
+                                status: e.target.checked,
+                              });
+                            }}
+                          />
+                          <label
+                            className="form-check-label"
+                            htmlFor="flexSwitchCheckDefault"
+                          >
+                            {userEdit.status ? "Active" : "Inactive"}
+                          </label>
+                        </div>
+                      </>
+                    )}
+                    <button className="btn btn-primary form-control btn-save">
+                      Edit User
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );
