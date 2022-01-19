@@ -93,7 +93,7 @@ export const UserProvider = (props) => {
           showConfirmButton: false,
           timer: 2000,
         });
-        // history.push("/products");
+        history.push("/products");
         setLoading(false);
       }
     } catch (error) {
@@ -117,7 +117,7 @@ export const UserProvider = (props) => {
   const logout = (history) => {
     setUser(inicialUserState);
     localStorage.removeItem("user");
-    // history.push("/");
+    history.push("/");
   };
 
   const value = {
