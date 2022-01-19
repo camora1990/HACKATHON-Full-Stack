@@ -1,4 +1,4 @@
-import { Rate } from "antd";
+import { Pagination, Rate } from "antd";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
@@ -23,17 +23,23 @@ export const MyProducts = () => {
   const [isEdit, setisEdit] = useState(false);
   const [loadingProduct, setLoadingProduct] = useState(false);
   const [idProduct, setidProduct] = useState("");
+  const [page, setPage] = useState(1);
+  const [totalData, settotalData] = useState(0);
+  const [pageSize, setpageSize] = useState(0);
 
-  const getMyProducts = async () => {
+  const getMyProducts = async (page) => {
+    debugger
     const { token, id } = user;
     try {
-      const { data } = await axios.get(`/product/${id}`, {
+      const { data } = await axios.get(`/product/${id}?page=${page}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       setProducts(data.products);
       data.products.length > 0 ? setshowMessage(false) : setshowMessage(true);
-
+      setPage(data.information.page);
+      settotalData(data.information.totalDocs);
+      setpageSize(data.information.limit);
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -180,10 +186,14 @@ export const MyProducts = () => {
     }
   };
 
+  const onChangePage = (page) => {
+    getMyProducts(page);
+  };
+
   useEffect(() => {
     setLoading(true);
 
-    getMyProducts();
+    getMyProducts(page);
   }, []);
   return (
     <>
@@ -295,6 +305,16 @@ export const MyProducts = () => {
                 </table>
               </div>
             </div>
+          </div>
+        )}
+        {(!showMessage && !loading) && (
+          <div className="my-5 d-flex justify-content-center">
+            <Pagination
+              current={page}
+              total={totalData}
+              PageSize={pageSize}
+              onChange={onChangePage}
+            />
           </div>
         )}
       </div>

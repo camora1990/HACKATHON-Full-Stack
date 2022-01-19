@@ -1,4 +1,4 @@
-import { Rate } from "antd";
+import { Pagination, Rate } from "antd";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
@@ -6,7 +6,7 @@ import { useUser } from "../context/UserContext";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { Nav } from "./Nav";
 
-export const AdminProducts  = () => {
+export const AdminProducts = () => {
   const initialProduct = {
     name: "",
     description: "",
@@ -23,17 +23,21 @@ export const AdminProducts  = () => {
   const [isEdit, setisEdit] = useState(false);
   const [loadingProduct, setLoadingProduct] = useState(false);
   const [idProduct, setidProduct] = useState("");
-
+  const [page, setPage] = useState(1);
+  const [totalData, settotalData] = useState(0);
+  const [pageSize, setpageSize] = useState(0);
   const getAdminProducts = async () => {
     const { token } = user;
     try {
-      const { data } = await axios.get(`/product/`, {
+      const { data } = await axios.get(`/product/?page=${page}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       setProducts(data.products);
       data.products.length > 0 ? setshowMessage(false) : setshowMessage(true);
-
+      setPage(data.information.page);
+      settotalData(data.information.totalDocs);
+      setpageSize(data.information.limit);
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -46,7 +50,7 @@ export const AdminProducts  = () => {
           footer: '<a href="">Why do I have this issue?</a>',
         });
       }
-      console.log("error in MyProducts", error.message);
+      console.log("error in getAdminProducts", error.message);
     }
   };
 
@@ -180,10 +184,18 @@ export const AdminProducts  = () => {
     }
   };
 
+  const onChangePage = (page) => {
+    getAdminProducts(page);
+  };
+
   useEffect(() => {
     setLoading(true);
-
-    getAdminProducts();
+    if (!user.isAdmin) {
+      history.push("/products");
+    } else {
+      setLoading(true);
+      getAdminProducts();
+    }
   }, []);
   return (
     <>
@@ -295,6 +307,16 @@ export const AdminProducts  = () => {
                 </table>
               </div>
             </div>
+          </div>
+        )}
+        {(!showMessage && !loading) && (
+          <div className="my-5 d-flex justify-content-center">
+            <Pagination
+              current={page}
+              total={totalData}
+              PageSize={pageSize}
+              onChange={onChangePage}
+            />
           </div>
         )}
       </div>
@@ -436,4 +458,3 @@ export const AdminProducts  = () => {
     </>
   );
 };
-
