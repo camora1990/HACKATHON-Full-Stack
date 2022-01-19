@@ -26,7 +26,7 @@ export const Products = () => {
   const [totalData, settotalData] = useState(0);
   const [pageSize, setpageSize] = useState(0);
 
-  const { user } = useUser();
+  const { user,logout } = useUser();
 
   const getProducts = async (page = 1) => {
     const { token } = JSON.parse(localStorage.getItem("user"));
@@ -48,6 +48,7 @@ export const Products = () => {
     } catch (error) {
       setLoading(false);
       if (!error.response.data.ok) {
+        logout()
         return Swal.fire({
           icon: "error",
           title: "Oops...",
