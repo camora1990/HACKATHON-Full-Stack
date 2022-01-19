@@ -2,12 +2,6 @@ const { request, response } = require("express");
 const { encryptPassword, generateJWT } = require("../helpers");
 const { userModel } = require("../model");
 
-/**
- * @description Controller to register user
- * @param {*} req
- * @param {*} res
- * @author Camilo Morales Sanchez
- */
 const createUser = async (req = request, res = response) => {
   const { name, isAdmin, password } = req.body;
   const email = req.body.email.toUpperCase().trim();
@@ -44,12 +38,6 @@ const createUser = async (req = request, res = response) => {
   }
 };
 
-/**
- * @description Controller to list all user, for rol admin
- * @param {*} req
- * @param {*} res
- * @author Camilo Morales Sanchez
- */
 const listUser = async (req = request, res = response) => {
   const { limit = 10, page = 1 } = req.query;
   try {
@@ -61,7 +49,7 @@ const listUser = async (req = request, res = response) => {
       ok: true,
       status: 200,
       users,
-      information
+      information,
     });
   } catch (error) {
     res.status(500).json({
@@ -90,8 +78,36 @@ const deleteUser = async (req = request, res = response) => {
   }
 };
 
+const updateUser = async (req = request, res = response) => {
+  const { name, userEmail, isAdmin, status } = req.body;
+  console.log(req.body);
+  const {id} = req.params
+
+  try {
+    await userModel.findByIdAndUpdate(id, {
+      name,
+      email:userEmail,
+      isAdmin,
+      status,
+    });
+
+    res.status(200).json({
+      ok:true,
+      status:200,
+      message: "User updated successfully"
+    })
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      status: 500,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   createUser,
   deleteUser,
   listUser,
+  updateUser,
 };

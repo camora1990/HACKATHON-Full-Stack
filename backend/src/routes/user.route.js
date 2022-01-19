@@ -1,5 +1,10 @@
 const { Router } = require("express");
-const { createUser, listUser, deleteUser } = require("../controller");
+const {
+  createUser,
+  listUser,
+  deleteUser,
+  updateUser,
+} = require("../controller");
 const { check, header } = require("express-validator");
 const { validateExsitingEmail } = require("../helpers");
 const { validateFields } = require("../middlewares");
@@ -40,12 +45,7 @@ route.post(
 
 route.get(
   "/",
-  [
-    validateFields,
-    validateJWT,
-    validateUser,
-    validateAdmin,
-  ],
+  [validateFields, validateJWT, validateUser, validateAdmin],
   listUser
 );
 
@@ -60,6 +60,23 @@ route.delete(
     validateAdmin,
   ],
   deleteUser
+);
+
+route.put(
+  "/update-user/:id",
+  [
+    validateJWT,
+    validateUser,
+    validateAdmin,
+    check("id", "Id is not a valid mongo id").isMongoId(),
+    check("userEmail")
+      .if(check("userEmail").exists())
+      .custom(validateExsitingEmail)
+      .isEmail()
+      .withMessage("Invalid email"),
+    validateFields,
+  ],
+  updateUser
 );
 
 module.exports = route;
