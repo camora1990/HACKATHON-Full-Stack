@@ -1,7 +1,7 @@
 import React from "react";
 import { useUser } from "../context/UserContext";
 import { useHistory, NavLink } from "react-router-dom";
-import img from "../public/img/user.png";
+
 
 export const Nav = () => {
   const { user, logout } = useUser();
