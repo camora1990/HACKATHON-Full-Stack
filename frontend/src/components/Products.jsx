@@ -84,7 +84,7 @@ export const Products = () => {
               products on the platform so that other users can enjoy them
             </p>
             <hr />
-            <p className="mb-0"></p>
+            
           </div>
         ) : (
           
@@ -112,9 +112,9 @@ export const Products = () => {
                     <h6 className="card-text">
                       $ {prod.price.toLocaleString()}
                     </h6>
-                    <p className="ant-rate-text card-text">
+                    <div className="ant-rate-text card-text">
                       <Rate disabled allowHalf value={prod.raiting} />
-                    </p>
+                    </div>
                     <p className="card-text">
                       <small className="text-muted">{prod.user.name}</small>
                     </p>

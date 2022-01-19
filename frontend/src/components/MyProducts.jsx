@@ -28,7 +28,7 @@ export const MyProducts = () => {
   const [pageSize, setpageSize] = useState(0);
 
   const getMyProducts = async (page) => {
-    debugger
+
     const { token, id } = user;
     try {
       const { data } = await axios.get(`/product/${id}?page=${page}`, {
@@ -157,7 +157,6 @@ export const MyProducts = () => {
   };
   const updateProduct = async (formData) => {
     try {
-      debugger;
       await axios.put(`/product/update-product/${idProduct}`, formData, {
         headers: { Authorization: `Bearer ${user.token}` },
       });

@@ -157,7 +157,6 @@ export const AdminProducts = () => {
 
   const updateProduct = async (formData) => {
     try {
-      debugger;
       await axios.put(`/product/update-product/${idProduct}`, formData, {
         headers: { Authorization: `Bearer ${user.token}` },
       });

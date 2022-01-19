@@ -109,7 +109,7 @@ export const AdminUser = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          debugger
+
           setloadingEditUser(true);
           editUser.userEmail == initialEmail && delete editUser.userEmail
           await axios.put(`/user/update-user/${id}`, editUser, {
