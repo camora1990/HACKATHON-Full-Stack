@@ -26,7 +26,8 @@ export const AdminProducts = () => {
   const [page, setPage] = useState(1);
   const [totalData, settotalData] = useState(0);
   const [pageSize, setpageSize] = useState(0);
-  const getAdminProducts = async () => {
+
+  const getAdminProducts = async (page) => {
     const { token } = user;
     try {
       const { data } = await axios.get(`/product/?page=${page}`, {
@@ -153,6 +154,7 @@ export const AdminProducts = () => {
       console.log("error in createProduct", error.message);
     }
   };
+
   const updateProduct = async (formData) => {
     try {
       debugger;
@@ -194,9 +196,10 @@ export const AdminProducts = () => {
       history.push("/products");
     } else {
       setLoading(true);
-      getAdminProducts();
+      getAdminProducts(page);
     }
   }, []);
+
   return (
     <>
       <Nav />{" "}
@@ -241,12 +244,7 @@ export const AdminProducts = () => {
               {" "}
               Create new product
             </button>
-            <div
-              className="tab-pane fade show active"
-              id="compara"
-              role="tabpanel"
-              aria-labelledby="compara-tab"
-            >
+            <div className="tab-pane fade show active"id="compara" role="tabpanel" aria-labelledby="compara-tab" >
               <div className="table-responsive">
                 <table
                   className="table table-striped table-dark table-bordered table-hover shadow bg-body rounded align-middle"
@@ -309,7 +307,7 @@ export const AdminProducts = () => {
             </div>
           </div>
         )}
-        {(!showMessage && !loading) && (
+        {!showMessage && !loading && (
           <div className="my-5 d-flex justify-content-center">
             <Pagination
               current={page}
